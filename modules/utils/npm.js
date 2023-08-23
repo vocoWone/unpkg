@@ -8,6 +8,12 @@ import bufferStream from './bufferStream.js';
 const npmRegistryURL =
   process.env.NPM_REGISTRY_URL || 'https://registry.npmjs.org';
 
+const privateNpmScopes = (process.env.PRIVATE_NPM_SCOPES || "").split(",");
+
+const privateNpmRegistryURL = process.env.PRIVATE_NPM_REGISTRY_URL || npmRegistryURL;
+
+const privateNpmRegistryURLPrefix = process.env.PRIVATE_NPM_REGISTRY_URL_PREFIX || "/-";
+
 const agent = new https.Agent({
   keepAlive: true
 });
@@ -42,7 +48,8 @@ function encodePackageName(packageName) {
 
 async function fetchPackageInfo(packageName, log) {
   const name = encodePackageName(packageName);
-  const infoURL = `${npmRegistryURL}/${name}`;
+  const isPrivate = isPrivatePackageName(packageName)
+  const infoURL = `${isPrivate ? privateNpmRegistryURL : npmRegistryURL}/${name}`;
 
   log.debug('Fetching package info for %s from %s', packageName, infoURL);
 
@@ -166,10 +173,11 @@ export async function getPackageConfig(packageName, version, log) {
  * Returns a stream of the tarball'd contents of the given package.
  */
 export async function getPackage(packageName, version, log) {
+  const isPrivate = isPrivatePackageName(packageName)
   const tarballName = isScopedPackageName(packageName)
     ? packageName.split('/')[1]
     : packageName;
-  const tarballURL = `${npmRegistryURL}/${packageName}/-/${tarballName}-${version}.tgz`;
+  const tarballURL = `${isPrivate?privateNpmRegistryURL:npmRegistryURL}/${packageName}${isPrivate?privateNpmRegistryURLPrefix:"/-"}/${tarballName}-${version}.tgz`;
 
   log.debug('Fetching package for %s from %s', packageName, tarballURL);
 
@@ -203,4 +211,8 @@ export async function getPackage(packageName, version, log) {
   log.error(content);
 
   return null;
+}
+
+export function isPrivatePackageName(packageName) {
+  return privateNpmScopes.findIndex(_=> packageName.startsWith(`${_}/`)) > -1;
 }

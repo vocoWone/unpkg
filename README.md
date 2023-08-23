@@ -12,3 +12,16 @@ Please visit [the UNPKG website](https://unpkg.com) to learn more about how to u
 ### Sponsors
 
 Our sponsors and backers are listed [in SPONSORS.md](SPONSORS.md).
+
+### 自建 unpkg 访问私有库
+
+环境变量:
+
+    PRIVATE_NPM_SCOPES: 存放私有库包命名空间 e.g: wangzh,iwangzh
+
+    PRIVATE_NPM_REGISTRY_URL: 私有库地址 e.g: https://registry-npm.xxx-inc.com
+    
+    PRIVATE_NPM_REGISTRY_URL_PREFIX: 私有库地址前缀 e.g: /download/xxx
+
+## TODO
+    生成镜像

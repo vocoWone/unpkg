@@ -9,7 +9,8 @@
     "serve": "nodemon -w server.js server.js",
     "test": "jest",
     "watch": "rollup -c -w",
-    "postinstall": "yarn run build"
+    "postinstall": "yarn run build",
+    "dev":"yarn build && PRIVATE_NPM_SCOPES=@xxx-fe  PRIVATE_NPM_REGISTRY_URL=https://registry-npm.xxx-inc.com  PRIVATE_NPM_REGISTRY_URL_PREFIX=/download/xxx  NODE_ENV=production node server.js"
   },
   "dependencies": {
     "@babel/core": "^7.2.2",
